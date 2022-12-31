@@ -7,6 +7,20 @@ Full specifications are at [**specs.md**](/specs.md)
 ## Usage
 > Note: Plexia doesn't respect BEDMASS (brackets, exponents, division, multiplication, adding, subtracting).
 
+You can create an interactive shell by running:
+
+```bash
+$ python shell.py
+```
+
+You can run files by running:
+
+```bash
+$ python main.py file.plexia
+```
+
+---
+
 Calculations:
 ```
 calc 1 + 1 * 2
@@ -25,9 +39,4 @@ variable = 10 + 10
 Outputing something to the standard output:
 ```
 print variable / 2
-```
-
-Run everything by using the `main.py` runner:
-```bash
-python main.py file.plexia
 ```

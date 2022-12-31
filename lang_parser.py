@@ -6,6 +6,9 @@ class Parser:
         self.variables = {}
 
     def evaluate_expression(self, tokens):
+        if len(tokens) == 1:
+            return tokens[0].value
+
         # Get indexes of all operands
         op_indexes = []
         for i in range(len(tokens) - 1):
@@ -35,10 +38,14 @@ class Parser:
     def calculate(self, tokens):
         # Only one variable
         if len(tokens) == 2:
-            return self.variables[tokens[1].value]
+            if isinstance(tokens[1], Variable):
+                return self.variables[tokens[1].value]
         # Only Numbers
         if not any(isinstance(x, Variable) for x in tokens):
-            return self.evaluate_expression(tokens[1:])
+            _tokens = tokens[1:]
+            if len(_tokens) <= 0:
+                _tokens = tokens
+            return self.evaluate_expression(_tokens)
         # Variables and numbers
         if any(isinstance(x, Variable) for x in tokens) and any(isinstance(x, Number) for x in tokens):
             final_token_list = []
@@ -70,7 +77,7 @@ class Parser:
             elif isinstance(tokenized_line[1], EQUALS):
                 del tokenized_line[0]
                 del tokenized_line[0]
-                self.variables[keyword.value] = self.evaluate_expression(tokenized_line)
+                self.variables[keyword.value] = self.calculate(tokenized_line)
 
 if __name__ == "__main__":
     code = """#calc 2 + 2 * 5 / 10 * 20 + 1000

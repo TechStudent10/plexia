@@ -35,7 +35,7 @@ class Parser:
         
         return current_value
 
-    def calculate(self, tokens):
+    def get_value(self, tokens):
         # Only one variable
         if len(tokens) == 2:
             if isinstance(tokens[1], Variable):
@@ -73,11 +73,11 @@ class Parser:
             if keyword.value == "calc":
                 print(self.evaluate_expression(tokenized_line))
             elif keyword.value == "print":
-                print(self.calculate(tokenized_line))
+                print(self.get_value(tokenized_line))
             elif isinstance(tokenized_line[1], EQUALS):
                 del tokenized_line[0]
                 del tokenized_line[0]
-                self.variables[keyword.value] = self.calculate(tokenized_line)
+                self.variables[keyword.value] = self.get_value(tokenized_line)
 
 if __name__ == "__main__":
     code = """#calc 2 + 2 * 5 / 10 * 20 + 1000

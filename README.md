@@ -38,5 +38,5 @@ variable = 10 + 10
 
 Outputing something to the standard output:
 ```
-print variable / 2
+print $variable / 2
 ```

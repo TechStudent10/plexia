@@ -1,4 +1,5 @@
 from string import digits as DIGITS
+import math
 
 class Token:
     token_type = "Generic"
@@ -57,6 +58,7 @@ class Lexer:
 
         for line in lines:
             if line[0] == "#": continue
+            if len(line) == 0: continue
             tokenized_line = []
             words = line.split(" ")
             keyword = words[0]
@@ -84,7 +86,11 @@ class Lexer:
                         int(word)
                         tokenized_line.append(Number(word))
                     except ValueError:
-                        pass
+                        try:
+                            float(word)
+                            tokenized_line.append(Number(str(math.floor(int(word)))))
+                        except ValueError:
+                            pass
         
             tokens.append(tokenized_line)
 

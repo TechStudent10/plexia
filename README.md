@@ -1,6 +1,8 @@
 # Plexia
 A toy language made in a couple of hours (with no external dependencies) :D
 
+Check out my YouTube video demo: https://www.youtube.com/watch?v=2UXqebnB900
+
 ## Specs
 Full specifications are at [**specs.md**](/specs.md)
 

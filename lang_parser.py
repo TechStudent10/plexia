@@ -1,4 +1,4 @@
-from lexer import Lexer, PLUS, MUL, DIV, MINUS, EQUALS, Variable, Number
+from lexer import Lexer, PLUS, MUL, DIV, MINUS, EQUALS, Variable, Number, String
 
 class Parser:
     def __init__(self, lexer: Lexer):
@@ -36,10 +36,13 @@ class Parser:
         return current_value
 
     def get_value(self, tokens):
-        # Only one variable
         if len(tokens) == 2:
+            # Only one variable
             if isinstance(tokens[1], Variable):
                 return self.variables[tokens[1].value]
+            # String
+            if isinstance(tokens[1], String):
+                return tokens[1].value
         # Only Numbers
         if not any(isinstance(x, Variable) for x in tokens):
             _tokens = tokens[1:]

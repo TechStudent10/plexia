@@ -1,4 +1,4 @@
-from string import digits as DIGITS
+from string import digits as DIGITS, ascii_letters
 import math
 
 class Token:
@@ -49,6 +49,9 @@ class Keyword(TokenWithValue):
 class Variable(TokenWithValue):
     token_type = "VARIABLE"
 
+class String(TokenWithValue):
+    token_type = "STRING"
+
 class Lexer:
     def __init__(self):
         pass
@@ -56,47 +59,76 @@ class Lexer:
     def tokenize(self, lines):
         tokens = []
 
+        currently_in_quotes = False
+        current_string = ""
         for line in lines:
+            if len(line) == 0 or line == "": continue
             if line[0] == "#": continue
-            if len(line) == 0: continue
             tokenized_line = []
             words = line.split(" ")
             keyword = words[0]
             tokenized_line.append(Keyword(keyword))
             
             for word in words:
-                if word == "(":
-                    tokenized_line.append(LPARAN())
+                token = None
+
+                if currently_in_quotes:
+                    current_string = current_string + " " + (word[:-1] if word.endswith("\"") or word.endswith("'") else word)
+                    # print("c", current_string)
+                    # continue
+
+                if word == " ":
+                    pass
+                elif word == "(":
+                    token = LPARAN()
                 elif word == ")":
-                    tokenized_line.append(RPARAN())
+                    token = RPARAN()
                 elif word == "+":
-                    tokenized_line.append(PLUS())
+                    token = PLUS()
                 elif word == "-":
-                    tokenized_line.append(MINUS())
+                    token = MINUS()
                 elif word == "/":
-                    tokenized_line.append(DIV())
+                    token =  DIV()
                 elif word == "*":
-                    tokenized_line.append(MUL())
+                    token = MUL()
                 elif word == "=":
-                    tokenized_line.append(EQUALS())
-                elif word[0] == "$":
-                    tokenized_line.append(Variable(word[1:]))
+                    token = EQUALS()
+                elif word.startswith("$"):
+                    token = Variable(word[1:])
+                elif word.startswith("\"") or word.startswith("'"):
+                    if currently_in_quotes == False:
+                        if word.endswith("\"") or word.endswith("'"):
+                            token = String(word[:-1][1:])
+                            currently_in_quotes = False
+                        else:
+                            currently_in_quotes = True
+                            current_string = word[1:]
+                elif word.endswith("\"") or word.endswith("'"):
+                    token = String(current_string)
+                    currently_in_quotes = False
                 else:
                     try:
                         int(word)
-                        tokenized_line.append(Number(word))
+                        token = Number(word)
                     except ValueError:
                         try:
                             float(word)
-                            tokenized_line.append(Number(str(math.floor(int(word)))))
+                            token = Number(str(math.floor(int(word))))
                         except ValueError:
                             pass
+
+                if token:
+                    if isinstance(token, list):
+                        for t in token:
+                            tokenized_line.append(t)
+                    else:
+                        tokenized_line.append(token)
         
             tokens.append(tokenized_line)
 
         return tokens
 
 if __name__ == "__main__":
-    line = ["calc 2 + 2 * 5"]
+    line = ["greeting = \"Hi\""]
     lexer = Lexer()
     print(lexer.tokenize(line))

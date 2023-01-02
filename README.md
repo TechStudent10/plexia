@@ -40,3 +40,11 @@ Outputing something to the standard output:
 ```
 print $variable / 2
 ```
+
+Strings:
+
+```
+print "Hello World!"
+string = "Hi Mom!"
+print $string
+```

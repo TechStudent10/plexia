@@ -1,9 +1,12 @@
 from lexer import Lexer, PLUS, MUL, DIV, MINUS, EQUALS, Variable, Number, String
 
+from std_lib.error import *
+
 class Parser:
     def __init__(self, lexer: Lexer):
         self.lexer = lexer
         self.variables = {}
+        self.stack_trace = []
 
     def evaluate_expression(self, tokens):
         if len(tokens) == 1:
@@ -39,6 +42,7 @@ class Parser:
         if len(tokens) == 2:
             # Only one variable
             if isinstance(tokens[1], Variable):
+                self.stack_trace.append(["var", tokens[1].value])
                 return self.variables[tokens[1].value]
             # String
             if isinstance(tokens[1], String):
@@ -55,6 +59,7 @@ class Parser:
             for token in tokens:
                 if isinstance(token, Variable):
                     final_token_list.append(Number(self.variables[token.value]))
+                    self.stack_trace.append(["var", token.value])
                 else:
                     final_token_list.append(token)
 
@@ -64,6 +69,7 @@ class Parser:
         for token in tokens:
             if isinstance(token, Variable):
                 final_token_list.append(Number(self.variables[token.value]))
+                self.stack_trace.append(["var", token.value])
             else:
                 final_token_list.append(token)
         return self.evaluate_expression(final_token_list)
@@ -71,16 +77,28 @@ class Parser:
     def parse(self, code):
         lines = code.split("\n")
         tokens = self.lexer.tokenize(lines)
+        err = None
         for tokenized_line in tokens:
             keyword = tokenized_line[0]
+            err = None
             if keyword.value == "calc":
                 print(self.evaluate_expression(tokenized_line))
             elif keyword.value == "print":
                 print(self.get_value(tokenized_line))
-            elif isinstance(tokenized_line[1], EQUALS):
+            elif len(tokenized_line) >= 2 and isinstance(tokenized_line[1], EQUALS):
                 del tokenized_line[0]
                 del tokenized_line[0]
-                self.variables[keyword.value] = self.get_value(tokenized_line)
+                if len(tokenized_line) == 0:
+                    err = SyntaxError("Invalid Syntax: No value after equals sign (=)")
+                else:
+                    self.variables[keyword.value] = self.get_value(tokenized_line)
+            else:
+                err = UnknownKeywordError(f"Unknown Keyword Found: {keyword.value}")
+
+            if err:
+                err.throw(self.stack_trace)
+            
+            self.stack_trace = []
 
 if __name__ == "__main__":
     code = """#calc 2 + 2 * 5 / 10 * 20 + 1000

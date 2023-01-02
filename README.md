@@ -23,6 +23,16 @@ $ python main.py file.plexia
 
 ---
 
+Error Example:
+
+```
+----------------------------
+SyntaxError (on <module>)
+Invalid Syntax: No value after equals sign (=)
+----------------------------
+Exiting program...
+```
+
 Calculations:
 ```
 calc 1 + 1 * 2
